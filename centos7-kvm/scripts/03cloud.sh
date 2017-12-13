@@ -88,8 +88,7 @@ After=libvirtd.service
 [Service]
 Type=simple
 EnvironmentFile=-/etc/default/cloudstack-agent
-ExecStart=/bin/sh -ec '\
-    export ACP=\`ls /usr/share/cloudstack-agent/lib/*.jar /usr/share/cloudstack-agent/plugins/*.jar 2>/dev/null|tr "\\n" ":"\`; export CLASSPATH="\$ACP:/etc/cloudstack/agent:/usr/share/cloudstack-common/scripts"; mkdir -m 0755 -p \${JAVA_TMPDIR}; \${JAVA} -Djava.io.tmpdir="\${JAVA_TMPDIR}" -Xms\${JAVA_HEAP_INITIAL} -Xmx\${JAVA_HEAP_MAX} -cp \$CLASSPATH" \$JAVA_CLASS'
+ExecStart=/bin/sh -ec 'export ACP=\`ls /usr/share/cloudstack-agent/lib/*.jar /usr/share/cloudstack-agent/plugins/*.jar 2>/dev/null|tr "\\n" ":"\`; export CLASSPATH="\$ACP:/etc/cloudstack/agent:/usr/share/cloudstack-common/scripts"; mkdir -m 0755 -p \${JAVA_TMPDIR}; \${JAVA} -Djava.io.tmpdir="\${JAVA_TMPDIR}" -Xms\${JAVA_HEAP_INITIAL} -Xmx\${JAVA_HEAP_MAX} -cp "\$CLASSPATH" \$JAVA_CLASS'
 Restart=always
 RestartSec=10s
 
@@ -101,6 +100,8 @@ systemctl daemon-reload
 systemctl enable cloudstack-agent
 
 cat > /etc/cloudstack/agent/agent.properties <<EOF
+guid=
+local.storage.uuid=
 workers=5
 host=172.20.0.1
 port=8250
