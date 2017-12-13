@@ -51,17 +51,19 @@ agentscp() {
 
   echo "[acs agent] Copied all files, start hacking!"
 }
+```
 
 Build CloudStack code, cd to the git repository's root directory and run the
 following to transfer new jars, files, configs etc:
 
+
     agentscp YOUR-MONKEYBOX-IP
+
 
 If needed, manually restart the agent using:
 
+
     systemctl restart cloudstack-agent
 
-
-```
 
 
