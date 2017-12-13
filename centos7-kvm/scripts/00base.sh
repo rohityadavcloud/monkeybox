@@ -6,7 +6,7 @@ cat > /etc/motd << EOF
 
    __?.o/  CentOS 7 KVM MonkeyBox
   (  )#    Built from https://github.com/rhtyd/monkeybox.git
- (___(_)   Happy hacking CloudStack!
+ (___(_)   Happy CloudStack hacking!
 
 EOF
 
