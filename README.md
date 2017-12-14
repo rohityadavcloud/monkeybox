@@ -13,6 +13,14 @@ Notes:
 - If you've any other hypervisor such as VirtualBox or VMware workstations
   please uninstall it before proceeding further.
 
+Clone the monkeybox repo using:
+
+    $ git clone https://github.com/rhtyd/monkeybox.git
+
+Build an appliance using:
+
+    $ cd <path> && packer build <json fil>
+
 Pre-built boxes can be [downloaded](http://dl.rohityadav.cloud/monkeyboxes/) from:
 
     http://dl.rohityadav.cloud/monkeyboxes/
@@ -154,6 +162,14 @@ Setup IntelliJ (or any IDE of your choice), get it from here:
 
     https://www.jetbrains.com/idea/download/#section=linux
 
+Install pyenv, jenv as well.
+
+Setup `aliasrc` that defines some useful bash aliases, exports and utilities
+such as `agentscp`. Run the following while in the directory root:
+
+    $ echo "source $PWD/aliasrc" >> ~/.bashrc
+    $ echo "source $PWD/aliasrc" >> ~/.zshrc
+
 ### Build and Test CloudStack
 
 It's assumed that the directory structure is something like:
@@ -161,10 +177,6 @@ It's assumed that the directory structure is something like:
         folder
         ├── cloudstack
         └── monkeybox
-
-Clone the monkeybox repo:
-
-    $ git clone https://github.com/rhtyd/monkeybox.git
 
 Fork the repository at: github.com/apache/cloudstack, or get the code:
 
@@ -186,10 +198,11 @@ Install marvin:
 
     $ sudo pip install --upgrade tools/marvin/dist/Marvin*.tar.gz
 
-Copy agent scripts and code using: (see how to setup `agentscp` in next section)
+While in CloudStack's repo's root/top directory, run the folllowing to copy
+agent scripts, jars, configs to your KVM host:
 
     $ cd /path/to/git-repo/root
-    $ agentscp 172.20.1.10
+    $ agentscp 172.20.1.10  # Use the appropriate box IP
 
 Deploy datacenter using:
 
@@ -199,55 +212,25 @@ Example, to run a marvin test:
 
     $ nosetests --with-xunit --xunit-file=results.xml --with-marvin --marvin-config=../monkeybox/adv-xs.cfg -s -a tags=advanced --zone=KVM-advzone1 --hypervisor=KVM test/integration/smoke/test_vm_life_cycle.py
 
-### Copying agent scripts and code
+When you fix an issue, rebuild cloudstack and push new changes to your KVM host
+using `agentscp` and if necessary restart the agent using:
 
-Put the following in your `~/.bashrc` or `~/.zshrc`:
+    $ agentscp 172.20.1.10
+    $ systemctl restart cloudstack-agent
 
-```
-agentscp() {
-  ROOT=$PWD
-  echo "[acs agent] Syncing changes to agent: $1"
+# TODO
 
-  echo "[acs agent] Copied systemvm.iso"
-  scp $ROOT/systemvm/dist/systemvm.iso  root@$1:/usr/share/cloudstack-common/vms/
+- Brief docs on nfs server and storage setup
+- Docs on mysql-server setup
+- IDE setup, several docs improvements
+- Boxes for CentOS6, Ubuntu, XenServer, ESXi?
+- Publish on Vagrant cloud, vagrant based workflow?
+- End to end setup and verification
 
-  echo "[acs agent] Syncing python lib changes to agent: $1"
-  scp -r $ROOT/python/lib/* root@$1:/usr/lib64/python2.6/site-packages/ 2>/dev/null || true
-  scp -r $ROOT/python/lib/* root@$1:/usr/lib64/python2.7/site-packages/ 2>/dev/null || true
+## Author
 
-  echo "[acs agent] Syncing scripts"
-  scp -r $ROOT/scripts/* root@$1:/usr/share/cloudstack-common/scripts/
+[Rohit Yadav](http://rohityadav.cloud), rohit@yadav.cloud
 
-  echo "[acs agent] Syncing kvm hypervisor jars"
-  ssh root@$1 "rm -f /usr/share/cloudstack-agent/lib/*"
-  scp -r $ROOT/plugins/hypervisors/kvm/target/*jar root@$1:/usr/share/cloudstack-agent/lib/
-  scp -r $ROOT/plugins/hypervisors/kvm/target/dependencies/*jar root@$1:/usr/share/cloudstack-agent/lib/
+## Contributing
 
-  echo "[acs agent] Syncing cloudstack-agent config and scripts"
-  scp $ROOT/agent/target/transformed/log4j-cloud.xml root@$1:/etc/cloudstack/agent/
-  ssh root@$1 "sed -i 's/INFO/DEBUG/g' /etc/cloudstack/agent/log4j-cloud.xml"
-  ssh root@$1 "sed -i 's/logs\/agent.log/\/var\/log\/cloudstack\/agent\/agent.log/g' /etc/cloudstack/agent/log4j-cloud.xml"
-  scp $ROOT/agent/target/transformed/libvirtqemuhook root@$1:/usr/share/cloudstack-agent/lib/
-
-  scp $ROOT/agent/target/transformed/cloud-setup-agent root@$1:/usr/bin/cloudstack-setup-agent
-  ssh root@$1 "sed -i 's/@AGENTSYSCONFDIR@/\/etc\/cloudstack\/agent/g' /usr/bin/cloudstack-setup-agent"
-  scp $ROOT/agent/target/transformed/cloud-ssh root@$1:/usr/bin/cloudstack-ssh
-  scp $ROOT/agent/target/transformed/cloudstack-agent-upgrade root@$1:/usr/bin/cloudstack-agent-upgrade
-  ssh root@$1 "chmod +x /usr/bin/cloudstack*"
-
-  echo "[acs agent] Copied all files, start hacking!"
-}
-```
-
-Build CloudStack code, cd to the git repository's root directory and run the
-following to transfer new jars, files, configs etc:
-
-    agentscp YOUR-MONKEYBOX-IP
-
-
-If needed, manually restart the agent using:
-
-    systemctl restart cloudstack-agent
-
-
-
+Send a pull request on https://github.com/rhtyd/monkeybox
