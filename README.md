@@ -19,8 +19,8 @@ Default password for the `root` user is `password`.
 
 These are the default static IPs of the MonkeyBox appliances:
 
-CentOS7 KVM: 172.20.1.10
-XenServer 6.5: 172.20.1.15
+    CentOS7 KVM: 172.20.1.10
+    XenServer 6.5: 172.20.1.15
 
 IP range 172.20.1.50-254 is used by DHCP server for dynamic IP allocation.
 
