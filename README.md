@@ -13,6 +13,12 @@ Notes:
 - If you've any other hypervisor such as VirtualBox or VMware workstations
   please uninstall it before proceeding further.
 
+Pre-built boxes can be [downloaded](http://dl.rohityadav.cloud/monkeyboxes/) from:
+
+    http://dl.rohityadav.cloud/monkeyboxes/
+
+Vagrant boxes are coming soon!
+
 ## Defaults
 
 Default password for the `root` user is `password`.
