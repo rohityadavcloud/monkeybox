@@ -1,6 +1,6 @@
 # MonkeyBox by @rhtyd
 
-![MonkeyBox CentOS7 KVM](doc/images/box-start.png)
+<img src="https://raw.githubusercontent.com/rhtyd/monkeybox/master/doc/images/box-start.png" style="width:400px;">
 
 The goal of this project is to help new CloudStack developers setup development
 environment based on ready to use VM boxes.
