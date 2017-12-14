@@ -5,20 +5,24 @@
 The goal of this project is to help new CloudStack developers setup development
 environment based on ready to use VM boxes.
 
-`Note`: This guide assumes that you're running a latest debian-based GNU/Linux
-distro such as Ubuntu and your laptop/platform has at least 16GB RAM and a
-Intel-VT or AMD-V enabled CPU so you can run on KVM hardware-accelerated nested
-hypervisors. If you've any other hypervisor such as VirtualBox or VMware
-workstations please uninstall it before proceeding further.
+Notes:
+- This guide assumes that you're running a latest debian-based GNU/Linux
+  distro such as Ubuntu. This guide was tested with `Ubuntu 17.10`.
+- Your laptop/platform has at least 16GB RAM and x86_64 Intel-VT or AMD-V
+  enabled CPU so you can run hardware-accelerated nested hypervisors.
+- If you've any other hypervisor such as VirtualBox or VMware workstations
+  please uninstall it before proceeding further.
 
-## Default IPs
-
-These are the default static IPs of the appliances:
-
-MonkeyBox CentOS7 KVM: 172.20.1.10
-MonkeyBox XenServer 6.5: 172.20.1.15
+## Defaults
 
 Default password for the `root` user is `password`.
+
+These are the default static IPs of the MonkeyBox appliances:
+
+CentOS7 KVM: 172.20.1.10
+XenServer 6.5: 172.20.1.15
+
+IP range 172.20.1.50-254 is used by DHCP server for dynamic IP allocation.
 
 ## Install KVM on your Laptop
 
@@ -34,21 +38,72 @@ on your machine:
 
 ![VM Manager](doc/images/virt-manager.png)
 
-### Setup KVM Virtual Networking
+## MonkeyNet Virtual Networking
 
-Click on Edit -> Connection Details -> Virtual Networks and add a virtual
-network as shown in the screenshot below:
+For our local dev-test environment, we'll create a 172.20.0.0/16 virtual network
+with NAT so VMs on this network are only accessible from the host/laptop but
+not by the outside network.
+
+    External Network
+      .                     +-----------------+
+      |              virbr1 | MonkeyBox VM1   |
+      |                  +--| IP: 172.20.1.10 |
+    +-----------------+  |  +-----------------+
+    | Host x.x.x.x    |--+
+    | IP: 172.20.0.1  |  |  +-----------------+
+    +-----------------+  +--| MonkeyBox VM2   |
+                            | IP: 172.20.x.y  |
+                            +-----------------+
+
+We're choosing here 172.20.0.0/16 as the network range because as per RFC1918
+it is allowed to be used for private networks. The 192.168.x.x and 10.x.x.x
+may be already used by VPN, lab resources and home networks which is why we
+need to choose this range.
+
+To keep the setup simple all MonkeyBox VMs have a single nic which can be
+used as a single physical network in CloudStack that has the public, private,
+management/control and storage networks. A complex setup is possible by adding
+multiple virtual networks and nics on them.
+
+### Setup MonkeyNet Virtual Network
+
+Run the following to setup `monkeynet` virtual network as described in above
+section:
+
+    $ virsh net-define monkeynet.xml
+    $ virsh net-autostart monkeynet
+    $ virsh net-start monkeynet
+
+The default network xml definition assumes `virbr1` is not already assigned, in
+case you get an error change the bridge name to something other than `virbr1`.
+
+Finally confirm using:
+
+    $ virsh net-list
+    Name                 State      Autostart     Persistent
+    ----------------------------------------------------------
+    default              active     yes           yes
+    monkeynet            active     yes           yes
+
+    $ ifconfig virbr1
+    virbr1: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.20.0.1  netmask 255.255.0.0  broadcast 172.20.255.255
+        ether 52:54:00:c4:5b:40  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+Alternatively, you may open `virt-viewer` manager and click on:
+
+    Edit -> Connection Details -> Virtual Networks
+
+Add a virtual network with NAT in 172.20.0.0/16 like below:
 
 ![VM Manager Virt Network](doc/images/virt-net.png)
 
 This will create a virtual network with NAT with the CIDR 172.20.0.0/16, your
 gateway will be `172.20.0.1` which is also your host's virtual bridge IP.
-
-We're choosing here 172.20.0.0/16 as the network range because as per RFC1918
-it is allowed to be used for private networks. The 192.168.x.x and 10.x.x.x
-may be already used by VPN, lab resources and home networks which is why we
-need to choose this range. On this range, CloudStack's
-private/public/storage/control networks may be allocated.
 
 ## Using MonkeyBox Appliance
 
@@ -79,30 +134,64 @@ be accessible to VMs, KVM hosts etc. at 172.20.0.1.
 
 Once your VM has started, try remote login using: (root:password)
 
-    ssh root@172.20.1.10
+    $ ssh root@172.20.1.10
 
 ## CloudStack Development
 
+### Install Development Tools
+
+Run this:
+
+    $ sudo apt-get install maven openjdk-8-jdk genisoimage python-mysql.connector libmysql-java ipmitool mysql-client bzip2 nfs-common
+
+Setup IntelliJ (or any IDE of your choice), get it from here:
+
+    https://www.jetbrains.com/idea/download/#section=linux
+
+### Build and Test CloudStack
+
+It's assumed that the directory structure is something like:
+
+        folder
+        ├── cloudstack
+        └── monkeybox
+
+Clone the monkeybox repo:
+
+    $ git clone https://github.com/rhtyd/monkeybox.git
+
+Fork the repository at: github.com/apache/cloudstack, or get the code:
+
+    $ git clone https://github.com/apache/cloudstack.git
+
 Build using:
 
-    mvn clean install -Dnoredist -P developer,systemvm
+    $ mvn clean install -Dnoredist -P developer,systemvm
 
 Deploy database using:
 
-    mvn -q -Pdeveloper -pl developer -Ddeploydb
+    $ mvn -q -Pdeveloper -pl developer -Ddeploydb
 
 Run management server using:
 
-    mvn -pl :cloud-client-ui jetty:run  -Dnoredist -Djava.net.preferIPv4Stack=true
+    $ mvn -pl :cloud-client-ui jetty:run  -Dnoredist -Djava.net.preferIPv4Stack=true
 
-Copy agent scripts and code using: (see more on agentscp in next section)
+Install marvin:
 
-    cd /path/to/git-repo/root
-    agentscp 172.20.1.10
+    $ sudo pip install --upgrade tools/marvin/dist/Marvin*.tar.gz
+
+Copy agent scripts and code using: (see how to setup `agentscp` in next section)
+
+    $ cd /path/to/git-repo/root
+    $ agentscp 172.20.1.10
 
 Deploy datacenter using:
 
-    python tools/marvin/marvin/deployDataCenter.py -i ../monkeybox/adv-kvm.cfg
+    $ python tools/marvin/marvin/deployDataCenter.py -i ../monkeybox/adv-kvm.cfg
+
+Example, to run a marvin test:
+
+    $ nosetests --with-xunit --xunit-file=results.xml --with-marvin --marvin-config=../monkeybox/adv-xs.cfg -s -a tags=advanced --zone=KVM-advzone1 --hypervisor=KVM test/integration/smoke/test_vm_life_cycle.py
 
 ### Copying agent scripts and code
 
