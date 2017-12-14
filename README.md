@@ -142,7 +142,7 @@ Once your VM has started, try remote login using: (root:password)
 
 Run this:
 
-    $ sudo apt-get install maven openjdk-8-jdk genisoimage python-mysql.connector libmysql-java ipmitool mysql-client bzip2 nfs-common
+    $ sudo apt-get install openjdk-8-jdk maven python-mysql.connector libmysql-java mysql-server mysql-client bzip2 nfs-common uuid-runtime python-setuptools ipmitool genisoimage
 
 Setup IntelliJ (or any IDE of your choice), get it from here:
 
