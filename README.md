@@ -12,6 +12,13 @@ Notes:
   enabled CPU so you can run hardware-accelerated nested hypervisors.
 - If you've any other hypervisor such as VirtualBox or VMware workstations
   please uninstall it before proceeding further.
+- Due to license issues, pre-built KVM-based monkeyboxes are only published.
+  Watch this space in sometimes, I'll blog about how to DIY XenServer and
+  VMware/ESXi+vCenter (6.5u1) monkeybox.
+
+Pre-built :monkey:boxes can be [downloaded](http://dl.rohityadav.cloud/monkeyboxes/) from:
+
+    http://dl.rohityadav.cloud/monkeyboxes/
 
 Clone the monkeybox repo using:
 
@@ -21,11 +28,18 @@ Build an appliance using:
 
     $ cd <path> && packer build <json fil>
 
-Pre-built boxes can be [downloaded](http://dl.rohityadav.cloud/monkeyboxes/) from:
-
-    http://dl.rohityadav.cloud/monkeyboxes/
-
 Vagrant boxes are coming soon!
+
+# TODO
+
+- Blog about creating XenServer and ESXi monkeyboxes
+- Brief docs on nfs server and storage setup
+- Docs on mysql-server setup
+- Additional tips, tricks on development
+- IDE/editor setup, several docs improvements
+- Boxes for CentOS6, Ubuntu, XenServer, ESXi
+- Publish on Vagrant cloud, vagrant based workflow?
+- End to end setup and verification
 
 ## Defaults
 
@@ -217,15 +231,6 @@ using `agentscp` and if necessary restart the agent using:
 
     $ agentscp 172.20.1.10
     $ systemctl restart cloudstack-agent
-
-# TODO
-
-- Brief docs on nfs server and storage setup
-- Docs on mysql-server setup
-- IDE setup, several docs improvements
-- Boxes for CentOS6, Ubuntu, XenServer, ESXi?
-- Publish on Vagrant cloud, vagrant based workflow?
-- End to end setup and verification
 
 ## Author
 
