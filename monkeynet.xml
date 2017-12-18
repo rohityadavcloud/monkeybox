@@ -1,5 +1,5 @@
 <network>
-  <name>monkeynet2</name>
+  <name>monkeynet</name>
   <forward mode='nat'/>
   <bridge name='virbr1' stp='on' delay='0'/>
   <ip address='172.30.0.1' netmask='255.255.0.0'>
