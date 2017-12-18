@@ -131,7 +131,9 @@ Add a virtual network with NAT in 172.20.0.0/16 like below:
 ![VM Manager Virt Network](doc/images/virt-net.png)
 
 This will create a virtual network with NAT with the CIDR 172.20.0.0/16, your
-gateway will be `172.20.0.1` which is also your host's virtual bridge IP.
+gateway will be `172.20.0.1` which is also your host's virtual bridge IP. The
+virtual network's bridge name `virbrX`may be different and it does not matter as long
+as you've a NAT-enabled virtual network in 172.20.0.0/16.
 
 ## Using MonkeyBox Appliance
 
