@@ -66,6 +66,8 @@ on your machine:
 
 ![VM Manager](doc/images/virt-manager.png)
 
+Note: you need to install/setup KVM only once.
+
 ## MonkeyNet Virtual Networking
 
 For our local dev-test environment, we'll create a 172.20.0.0/16 virtual network
@@ -135,6 +137,8 @@ gateway will be `172.20.0.1` which is also your host's virtual bridge IP. The
 virtual network's bridge name `virbrX`may be different and it does not matter as long
 as you've a NAT-enabled virtual network in 172.20.0.0/16.
 
+Note: you need to setup virtual networking only once.
+
 ## Using MonkeyBox Appliance
 
 Build or download pre-built monkey box appliance and import them as VMs using
@@ -166,6 +170,11 @@ Once your VM has started, try remote login using: (root:password)
 
     $ ssh root@172.20.1.10
 
+If you need multiple hypervisor hosts, you can either clone an existing
+monkeybox VM or re-import a new monkeybox template image (qcow2 etc). In such
+cases, do change the new VM's (bridge) IPs, rename their hostname and restart
+them before you use them as additional hypervisor hosts.
+
 ## CloudStack Development
 
 ### Install Development Tools
@@ -186,6 +195,13 @@ such as `agentscp`. Run the following while in the directory root:
     $ echo "source $PWD/aliasrc" >> ~/.bashrc
     $ echo "source $PWD/aliasrc" >> ~/.zshrc
 
+You may need to `source` your shell's rc/profile or relaunch shell/terminal
+to use `agentscp`.
+
+### Setup NFS storage
+
+TODO
+
 ### Build and Test CloudStack
 
 It's assumed that the directory structure is something like:
@@ -197,6 +213,14 @@ It's assumed that the directory structure is something like:
 Fork the repository at: github.com/apache/cloudstack, or get the code:
 
     $ git clone https://github.com/apache/cloudstack.git
+
+Noredist CloudStack builds requires additional jars that may be installed from:
+
+    https://github.com/rhtyd/cloudstack-nonoss
+
+Clone the above repository and run the install.sh script, you'll need to do
+this only once or whenver the noredist jar dependencies are updated in above
+repository.
 
 Build using:
 
@@ -226,7 +250,7 @@ Deploy datacenter using:
 
 Example, to run a marvin test:
 
-    $ nosetests --with-xunit --xunit-file=results.xml --with-marvin --marvin-config=../monkeybox/adv-xs.cfg -s -a tags=advanced --zone=KVM-advzone1 --hypervisor=KVM test/integration/smoke/test_vm_life_cycle.py
+    $ nosetests --with-xunit --xunit-file=results.xml --with-marvin --marvin-config=../monkeybox/adv-kvm.cfg -s -a tags=advanced --zone=KVM-advzone1 --hypervisor=KVM test/integration/smoke/test_vm_life_cycle.py
 
 When you fix an issue, rebuild cloudstack and push new changes to your KVM host
 using `agentscp` and if necessary restart the agent using:
