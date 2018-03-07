@@ -1,0 +1,10 @@
+iptables -A INPUT -i virbr1 -p udp -m udp --dport 53 -j ACCEPT
+iptables -A INPUT -i virbr1 -p tcp -m tcp --dport 53 -j ACCEPT
+iptables -A INPUT -i virbr1 -p udp -m udp --dport 67 -j ACCEPT
+iptables -A INPUT -i virbr1 -p tcp -m tcp --dport 67 -j ACCEPT
+iptables -A FORWARD -d 172.20.0.0/16 -o virbr1 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -s 172.20.0.0/16 -i virbr1 -j ACCEPT
+iptables -A FORWARD -i virbr1 -o virbr1 -j ACCEPT
+iptables -A FORWARD -o virbr1 -j REJECT --reject-with icmp-port-unreachable
+iptables -A FORWARD -i virbr1 -j REJECT --reject-with icmp-port-unreachable
+iptables -A OUTPUT -o virbr1 -p udp -m udp --dport 68 -j ACCEPT

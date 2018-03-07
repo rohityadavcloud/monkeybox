@@ -265,3 +265,61 @@ using `agentscp` and if necessary restart the agent using:
 ## Contributing
 
 Send a pull request on https://github.com/rhtyd/monkeybox
+
+## Troubleshooting
+
+### Iptables
+
+Should your datacenter deployment fail due to the KVM host unable to reach your management server, it might be due to iptable rules.
+
+If you see this in your hosts agent.log:
+
+    java.net.NoRouteToHostException: No route to host
+            at sun.nio.ch.Net.connect0(Native Method)
+            at sun.nio.ch.Net.connect(Net.java:454)
+            at sun.nio.ch.Net.connect(Net.java:446)
+            at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:648)
+            at com.cloud.utils.nio.NioClient.init(NioClient.java:56)
+            at com.cloud.utils.nio.NioConnection.start(NioConnection.java:95)
+            at com.cloud.agent.Agent.start(Agent.java:263)
+            at com.cloud.agent.AgentShell.launchAgent(AgentShell.java:410)
+            at com.cloud.agent.AgentShell.launchAgentFromClassInfo(AgentShell.java:378)
+            at com.cloud.agent.AgentShell.launchAgent(AgentShell.java:362)
+            at com.cloud.agent.AgentShell.start(AgentShell.java:467)
+            at com.cloud.agent.AgentShell.main(AgentShell.java:502)
+
+And a telnet from host to management server on port gives this result:
+
+    $ telnet 172.20.0.1 8250
+    Trying 172.20.0.1...
+    telnet: connect to address 172.20.0.1: No route to host
+    
+Clearing your iptables and setting new rules should take care of the issue. (Tested on Ubuntu 17.10)
+
+Run the following commands as su or with sudo powers.
+
+First, flush your rules and delete any user-defined chains:
+    
+    $ iptables -t nat -F && iptables -t nat -X
+    $ iptables -t filter -F && iptables -t filter -X
+    
+Add new rules by running the two scripts located in docs/scripts to set up new nat and filter rules, 
+ensuring that the network name (virbr1) in filter.table matches your management server IP:
+
+    $ bash -x <script>
+    
+Alternatively, add each rule separately.
+ 
+Finally, save your iptables.
+ 
+Ubuntu:
+ 
+    iptables-save
+    
+and if using iptables-persistent:
+
+    service iptables-persistent save
+    
+CentOS 6 and older (CentOS 7 uses FirewallD by default):
+
+    service iptables save
