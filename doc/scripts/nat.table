@@ -1,0 +1,6 @@
+iptables -t nat -P POSTROUTING ACCEPT
+iptables -t nat -A POSTROUTING -s 172.20.0.0/16 -d 224.0.0.0/24 -j RETURN
+iptables -t nat -A POSTROUTING -s 172.20.0.0/16 -d 255.255.255.255/32 -j RETURN
+iptables -t nat -A POSTROUTING -s 172.20.0.0/16 ! -d 172.20.0.0/16 -p tcp -j MASQUERADE --to-ports 1024-65535
+iptables -t nat -A POSTROUTING -s 172.20.0.0/16 ! -d 172.20.0.0/16 -p udp -j MASQUERADE --to-ports 1024-65535
+iptables -t nat -A POSTROUTING -s 172.20.0.0/16 ! -d 172.20.0.0/16 -j MASQUERADE
