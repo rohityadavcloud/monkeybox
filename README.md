@@ -48,7 +48,7 @@ Default password for the `root` user is `password`.
 These are the default static IPs of the MonkeyBox appliances:
 
     CentOS7 KVM: 172.20.1.10
-    XenServer 6.5: 172.20.1.15
+    XenServer 6.5/7.x: 172.20.1.20
 
 IP range 172.20.1.50-254 is used by DHCP server for dynamic IP allocation.
 
@@ -158,15 +158,17 @@ will allow nested hypervisors:
 
 ![Import 3](doc/images/vm-import-2.png)
 
-### Networking
+### Networking and Dev/Test Setup
 
 Your base platform (laptop) will have the gateway IP `172.20.0.1`.
 
-Run your favourite IDE/text-editors, your management server, MySQL server, NFS
-server (secondary and primary storages) on your host where these services will
-be accessible to VMs, KVM hosts etc. at 172.20.0.1.
+Ideally, run your favourite IDE such as IntelliJ IDEA, text-editors, your
+management server, MySQL server and NFS server (secondary and primary storages)
+on your laptop (not in a VM) where these services can be accessible to VMs, KVM
+hosts etc. at your host IP `172.20.0.1`.
 
-Once your VM has started, try remote login using: (root:password)
+Once your VM has started, try remote login using: (root:password, replace IP
+with the IP of your monkeybox host)
 
     $ ssh root@172.20.1.10
 
@@ -181,9 +183,9 @@ them before you use them as additional hypervisor hosts.
 
 Run this:
 
-    $ sudo apt-get install openjdk-8-jdk maven python-mysql.connector libmysql-java mysql-server mysql-client bzip2 nfs-common uuid-runtime python-setuptools ipmitool genisoimage
+    $ sudo apt-get install openjdk-8-jdk maven python-mysql.connector libmysql-java mysql-server mysql-client bzip2 nfs-common uuid-runtime python-setuptools ipmitool genisoimage nfs-kernel-server quota
 
-Setup IntelliJ (or any IDE of your choice), get it from here:
+Setup IntelliJ (recommended) or any IDE of your choice. Get IntelliJ Idea from:
 
     https://www.jetbrains.com/idea/download/#section=linux
 
@@ -198,9 +200,41 @@ such as `agentscp`. Run the following while in the directory root:
 You may need to `source` your shell's rc/profile or relaunch shell/terminal
 to use `agentscp`.
 
+### Setup MySQL Server
+
+After installing MySQL server, configure the following settings in its config
+file such as at `/etc/mysql/mysql.conf.d/mysqld.cnf` and restart mysql-server:
+
+    [mysqld]
+
+    sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,ERROR_FOR_DIVISION_BY_ZERO,NO_ZERO_DATE,NO_ZERO_IN_DATE,NO_ENGINE_SUBSTITUTION"
+    server_id = 1
+    innodb_rollback_on_timeout=1
+    innodb_lock_wait_timeout=600
+    max_connections=1000
+    log-bin=mysql-bin
+    binlog-format = 'ROW'
+
 ### Setup NFS storage
 
-TODO
+After installing nfs server, configure the exports:
+
+    echo "/export  *(rw,async,no_root_squash,no_subtree_check)" > /etc/exports
+    mkdir -p /export/testing/primary /export/testing/secondary
+
+Beware: Before deploying a zone on your monkeybox environment, make sure to seed
+the correct systemvmtemplate applicable for your branch. In your cloned
+CloudStack git repository you can use the `cloud-install-sys-tmplt` to seed
+the systemvmtemplate.
+
+The following is an example to setup 4.11.1 systemvmtemplate which you should
+run after deploying CloudStack db:
+
+    cd /path/to/cloudstack/git/repo
+    wget http://packages.shapeblue.com/systemvmtemplate/4.11/systemvmtemplate-4.11.1-kvm.qcow2.bz2
+    ./scripts/storage/secondary/cloud-install-sys-tmplt \
+          -m /export/testing/secondary -f systemvmtemplate-4.11.1-kvm.qcow2.bz2
+          -h kvm -o localhost -r cloud -d cloud
 
 ### Build and Test CloudStack
 
@@ -257,6 +291,22 @@ using `agentscp` and if necessary restart the agent using:
 
     $ agentscp 172.20.1.10
     $ systemctl restart cloudstack-agent
+
+### Debugging CloudStack
+
+Prior to starting CloudStack management server using mvn (or otherwise), export
+this on your shell:
+
+    export MAVEN_OPTS="$MAVEN_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"
+
+To remote-debug the KVM agent, put the following in
+`/etc/default/cloudstack-agent` in your monkeybox and restart cloudstack-agent:
+
+    JAVA=/usr/bin/java -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n
+
+The above will ensure that JVM with start with debugging enabled on port 8787.
+In IntelliJ, or your IDE/editor you can attach a remote debugger to this
+address:port and put breakpoints (and watches) as applicable.
 
 ## Author
 
