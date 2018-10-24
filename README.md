@@ -33,13 +33,8 @@ Vagrant boxes are coming soon!
 # TODO
 
 - Blog about creating XenServer and ESXi monkeyboxes
-- Brief docs on nfs server and storage setup
-- Docs on mysql-server setup
-- Additional tips, tricks on development
+- KVM Boxes: CentOS6, Ubuntu
 - IDE/editor setup, several docs improvements
-- Boxes for CentOS6, Ubuntu, XenServer, ESXi
-- Publish on Vagrant cloud, vagrant based workflow?
-- End to end setup and verification
 
 ## Defaults
 
@@ -287,10 +282,9 @@ Example, to run a marvin test:
     $ nosetests --with-xunit --xunit-file=results.xml --with-marvin --marvin-config=../monkeybox/adv-kvm.cfg -s -a tags=advanced --zone=KVM-advzone1 --hypervisor=KVM test/integration/smoke/test_vm_life_cycle.py
 
 When you fix an issue, rebuild cloudstack and push new changes to your KVM host
-using `agentscp` and if necessary restart the agent using:
+using `agentscp` which will also restart the agent:
 
     $ agentscp 172.20.1.10
-    $ systemctl restart cloudstack-agent
 
 ### Debugging CloudStack
 

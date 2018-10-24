@@ -1,5 +1,5 @@
 {
-  "description": "CentOS 7 x86_64 MonkeyStack KVM",
+  "description": "CentOS 7 x86_64 MonkeyBox KVM",
   "provisioners": [
     {
       "type": "shell",
@@ -22,14 +22,14 @@
         [ "-m", "2048M" ],
         [ "-smp", "cpus=1,maxcpus=4,cores=2" ]
       ],
-      "disk_size": 10240,
+      "disk_size": 20480,
       "format": "qcow2",
       "disk_interface": "virtio",
       "net_device": "virtio-net",
 
-      "iso_url": "http://mirror.nbrc.ac.in/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1708.iso",
-      "iso_checksum": "5848f2fd31c7acf3811ad88eaca6f4aa",
-      "iso_checksum_type": "md5",
+      "iso_url": "http://mirror.nbrc.ac.in/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1804.iso",
+      "iso_checksum": "937bf0a7b0932817f84f7230f15ed88911bbbd85c0c958680792b7f8d8f9c1a9",
+      "iso_checksum_type": "sha256",
 
       "vm_name": "centos7-kvm-base",
       "output_directory": "dist",
@@ -48,7 +48,10 @@
 
       "boot_wait": "10s",
       "boot_command": [
-        "<up><wait><tab><wait> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}//kickstart.cfg<enter><wait>"
+        "<esc>",
+        "<wait>",
+        "linux inst.ks=http://{{.HTTPIP}}:{{.HTTPPort}}/kickstart.cfg biosdevname=0 net.ifnames=0",
+        "<enter>"
       ],
 
       "shutdown_command": "shutdown -P now"

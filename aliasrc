@@ -54,5 +54,7 @@ agentscp() {
   scp $ROOT/agent/target/transformed/cloudstack-agent-upgrade root@$1:/usr/bin/cloudstack-agent-upgrade
   ssh root@$1 "chmod +x /usr/bin/cloudstack*"
 
+  /etc/init.d/cloudstack-agent restart || systemctl restart cloudstack-agent
+
   echo "[acs agent] Copied all files, start hacking!"
 }
