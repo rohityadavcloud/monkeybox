@@ -13,8 +13,8 @@ Notes:
 - If you've any other hypervisor such as VirtualBox or VMware workstations
   please uninstall it before proceeding further.
 - Due to license issues, pre-built KVM-based monkeyboxes are only published.
-  Watch this space in sometimes, I'll blog about how to DIY XenServer and
-  VMware/ESXi+vCenter (6.5u1) monkeybox.
+  Watch this space in sometimes, I may blog about how to DIY XenServer and
+  VMware/ESXi+vCenter monkeybox.
 
 Pre-built :monkey:boxes can be [downloaded](http://dl.rohityadav.cloud/monkeyboxes/) from:
 
@@ -32,9 +32,8 @@ Vagrant boxes are coming soon!
 
 # TODO
 
-- Blog about creating XenServer and ESXi monkeyboxes
-- KVM Boxes: CentOS6, Ubuntu
-- IDE/editor setup, several docs improvements
+- Ready to use KVM Boxes: Ubuntu
+- How to DIY XenServer and VMware monkeybox
 
 ## Defaults
 
@@ -180,7 +179,8 @@ Run this:
 
     $ sudo apt-get install openjdk-8-jdk maven python-mysql.connector libmysql-java mysql-server mysql-client bzip2 nfs-common uuid-runtime python-setuptools ipmitool genisoimage nfs-kernel-server quota
 
-Setup IntelliJ (recommended) or any IDE of your choice. Get IntelliJ Idea from:
+Setup IntelliJ (recommended) or any IDE of your choice. Get IntelliJ IDEA
+community edition from:
 
     https://www.jetbrains.com/idea/download/#section=linux
 
@@ -285,6 +285,12 @@ When you fix an issue, rebuild cloudstack and push new changes to your KVM host
 using `agentscp` which will also restart the agent:
 
     $ agentscp 172.20.1.10
+
+Using IDEA IDE:
+- Import the `cloudstack` directory and select `Maven` as build system
+- Go through the defaults, in the profiles page at least select noredist, vmware
+  etc.
+- Once IDEA builds the codebase cache you're good to go!
 
 ### Debugging CloudStack
 
