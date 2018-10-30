@@ -3,6 +3,14 @@ set -exu
 # KVM and CloudStack agent dependencies
 yum install -y ntp java-1.8.0-openjdk-headless.x86_64 python-argparse python-netaddr net-tools bridge-utils ebtables ethtool iproute ipset iptables libvirt libvirt-python openssh-clients perl qemu-img qemu-kvm libuuid glibc nss-softokn-freebl
 
+# Management server dependecies and services
+yum install -y mariadb-server nfs-utils
+systemctl disable mariadb
+
+# Marvin tests dependencies
+yum install -y pyOpenSSL telnet tcpdump
+pip install pycrypto
+
 # Setup networking
 cat > /etc/sysconfig/network-scripts/ifcfg-eth0 <<EOF
 TYPE=Ethernet
@@ -17,31 +25,25 @@ cat > /etc/sysconfig/network-scripts/ifcfg-cloudbr0 <<EOF
 TYPE=Bridge
 DEVICE=cloudbr0
 ONBOOT=yes
-BOOTPROTO=static
-IPADDR=172.20.1.10
-NETMASK=255.255.0.0
-GATEWAY=172.20.0.1
-DNS1=8.8.8.8
+BOOTPROTO=dhcp
+#IPADDR=172.20.1.10
+#NETMASK=255.255.0.0
+#GATEWAY=172.20.0.1
+DNS1=1.1.1.1
 DELAY=0
 STP=yes
 USERCTL=no
 NM_CONTROLLED=no
 EOF
 
-cat > /etc/sysconfig/network-scripts/ifcfg-cloudbr1 <<EOF
-TYPE=Bridge
-DEVICE=cloudbr1
-ONBOOT=yes
-BOOTPROTO=none
-DELAY=0
-STP=yes
-NM_CONTROLLED=no
-EOF
-
 # Setup iptables
+iptables -I INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
+iptables -I INPUT -p tcp -m tcp --dport 8096 -j ACCEPT
+iptables -I INPUT -p tcp -m tcp --dport 8787 -j ACCEPT
 iptables -I INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 iptables -I INPUT -p tcp -m tcp --dport 1798 -j ACCEPT
 iptables -I INPUT -p tcp -m tcp --dport 16509 -j ACCEPT
+iptables -I INPUT -p tcp -m tcp --dport 16514 -j ACCEPT
 iptables -I INPUT -p tcp -m tcp --dport 5900:6100 -j ACCEPT
 iptables -I INPUT -p tcp -m tcp --dport 49152:49216 -j ACCEPT
 iptables-save > /etc/sysconfig/iptables
@@ -116,6 +118,7 @@ guest.cpu.model=host-passthrough
 public.network.device=cloudbr0
 private.network.device=cloudbr0
 guest.network.device=cloudbr0
+host.reserved.mem.mb=0
 EOF
 
 cat > /etc/cloudstack/agent/environment.properties <<EOF
