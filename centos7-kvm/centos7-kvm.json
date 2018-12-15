@@ -31,7 +31,7 @@
       "iso_checksum": "19d94274ef856c4dfcacb2e7cfe4be73e442a71dd65cc3fb6e46db826040b56e",
       "iso_checksum_type": "sha256",
 
-      "vm_name": "centos7-kvm-base",
+      "vm_name": "monkeybox-centos7-kvm",
       "output_directory": "dist",
 
       "http_directory": "http",

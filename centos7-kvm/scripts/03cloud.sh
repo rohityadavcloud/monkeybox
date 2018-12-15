@@ -7,9 +7,20 @@ yum install -y ntp java-1.8.0-openjdk-headless.x86_64 python-argparse python-net
 yum install -y mariadb-server nfs-utils
 systemctl disable mariadb
 
+# Fix SELinux
+setenforce 0
+sed -i 's/SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+
+# Fix MySQL
+sed -i "/\[mysqld\]/a innodb_rollback_on_timeout=1" /etc/my.cnf
+sed -i "/\[mysqld\]/a innodb_lock_wait_timeout=600" /etc/my.cnf
+sed -i "/\[mysqld\]/a max_connections=700" /etc/my.cnf
+sed -i "/\[mysqld\]/a log-bin=mysql-bin" /etc/my.cnf
+sed -i "/\[mysqld\]/a binlog-format = 'ROW'" /etc/my.cnf
+
 # Marvin tests dependencies
-yum install -y pyOpenSSL telnet tcpdump
-pip install pycrypto
+yum install -y python-pip pyOpenSSL telnet tcpdump zlib-devel bzip2-devel openssl-devel xz-libs wget sqlite sqlite-devel python-paramiko python-setuptools python-devel mysql-devel openssl-devel ncurses-devel libxslt-devel libffi-devel openssh-askpass jq mariadb git screen sshpass at vim tmux mysql-connector-python gcc gcc-c++ make patch autoconf automake binutils
+pip install pycrypto texttable
 
 # Setup networking
 cat > /etc/sysconfig/network-scripts/ifcfg-eth0 <<EOF
