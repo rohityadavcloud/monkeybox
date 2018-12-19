@@ -13,8 +13,8 @@ EOF
 # Essentials
 yum install -y tmux vim htop wget jq
 
-# Fix hostname
-hostnamectl set-hostname monkeybox-centos7
+# Fix hostname to get from dhcp, otherwise use localhost
+hostnamectl set-hostname localhost --static
 
 # Setup public key access
 mkdir -pm 700 /root/.ssh

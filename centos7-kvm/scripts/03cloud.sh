@@ -4,8 +4,12 @@ set -exu
 yum install -y ntp java-1.8.0-openjdk-headless.x86_64 python-argparse python-netaddr net-tools bridge-utils ebtables ethtool iproute ipset iptables libvirt libvirt-python openssh-clients perl qemu-img qemu-kvm libuuid glibc nss-softokn-freebl
 
 # Management server dependecies and services
-yum install -y mariadb-server nfs-utils
+yum install -y mariadb-server nfs-utils mysql-connector-java genisoimage
 systemctl disable mariadb
+
+# Install cloudmonkey
+wget -O /bin/cmk https://github.com/apache/cloudstack-cloudmonkey/releases/download/6.0.0-testing-beta2/cmk.linux.amd64
+chmod +x /bin/cmk
 
 # Fix SELinux
 setenforce 0
