@@ -136,7 +136,7 @@ Note: you need to setup virtual networking only once.
 ## Using MonkeyBox Appliance
 
 Build or download pre-built monkey box appliance and import them as VMs using
-virt-viewer by adding a new VM:
+virt-viewer by adding a new VM: You can download pre-built images [here](http://dl.rohityadav.cloud/monkeyboxes/)
 
 ![Import 1](doc/images/vm-import-0.png)
 
