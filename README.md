@@ -228,7 +228,7 @@ run after deploying CloudStack db:
     cd /path/to/cloudstack/git/repo
     wget http://packages.shapeblue.com/systemvmtemplate/4.11/systemvmtemplate-4.11.1-kvm.qcow2.bz2
     ./scripts/storage/secondary/cloud-install-sys-tmplt \
-          -m /export/testing/secondary -f systemvmtemplate-4.11.1-kvm.qcow2.bz2
+          -m /export/testing/secondary -f systemvmtemplate-4.11.1-kvm.qcow2.bz2 \
           -h kvm -o localhost -r cloud -d cloud
 
 ### Build and Test CloudStack
