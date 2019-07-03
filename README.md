@@ -222,13 +222,14 @@ the correct systemvmtemplate applicable for your branch. In your cloned
 CloudStack git repository you can use the `cloud-install-sys-tmplt` to seed
 the systemvmtemplate.
 
-The following is an example to setup 4.11.1 systemvmtemplate which you should
-run after deploying CloudStack db:
+The following is an example to setup `4.11.3` systemvmtemplate which you should
+run after deploying CloudStack db: (please use CloudStack branch/version specific
+systemvmtemplate)
 
     cd /path/to/cloudstack/git/repo
-    wget http://packages.shapeblue.com/systemvmtemplate/4.11/systemvmtemplate-4.11.1-kvm.qcow2.bz2
+    wget http://packages.shapeblue.com/systemvmtemplate/4.11/systemvmtemplate-4.11.3-kvm.qcow2.bz2
     ./scripts/storage/secondary/cloud-install-sys-tmplt \
-          -m /export/testing/secondary -f systemvmtemplate-4.11.1-kvm.qcow2.bz2 \
+          -m /export/testing/secondary -f systemvmtemplate-4.11.3-kvm.qcow2.bz2 \
           -h kvm -o localhost -r cloud -d cloud
 
 ### Build and Test CloudStack
