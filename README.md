@@ -282,6 +282,8 @@ Example, to run a marvin test:
 
     $ nosetests --with-xunit --xunit-file=results.xml --with-marvin --marvin-config=../monkeybox/adv-kvm.cfg -s -a tags=advanced --zone=KVM-advzone1 --hypervisor=KVM test/integration/smoke/test_vm_life_cycle.py
 
+Note: Use nosetests-2.7 to run a smoketest, if you've nose installed for both Python2.7 and Python3.x in your environment.
+
 When you fix an issue, rebuild cloudstack and push new changes to your KVM host
 using `agentscp` which will also restart the agent:
 
