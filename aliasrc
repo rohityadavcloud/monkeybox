@@ -31,6 +31,7 @@ mgmtscp() {
   echo "[acs server] Cleaning old jar on server: $MS"
   sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "rm -f /usr/share/cloudstack-management/lib/cloudstack*jar"
   sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "rm -f /usr/share/cloudstack-management/lib/cloud-client-ui*jar"
+  sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "mv /var/log/cloudstack/management/management-server.log /var/log/cloudstack/management/management-server.log`date +%Y%m%dT%H%M%S`"
   echo "[acs server] Copying jar to server: $MS"
   sshpass -pP@ssword123 scp -Cv -o StrictHostKeyChecking=no $ROOT/client/target/cloud-client-ui-*.jar root@$MS:/usr/share/cloudstack-management/lib/
   echo "[acs server] Copying systemvm.iso"
