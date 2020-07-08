@@ -19,9 +19,25 @@ export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 
 # Pyenv
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+#export PATH="$HOME/.pyenv/bin:$PATH"
+#eval "$(pyenv init -)"
+#eval "$(pyenv virtualenv-init -)"
+
+mgmtscp() {
+  MS=$1
+  ROOT=$PWD
+  echo "[acs server] Stopping MS: $MS"
+  sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "systemctl stop cloudstack-management"
+  echo "[acs server] Cleaning old jar on server: $MS"
+  sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "rm -f /usr/share/cloudstack-management/lib/cloudstack*jar"
+  sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "rm -f /usr/share/cloudstack-management/lib/cloud-client-ui*jar"
+  echo "[acs server] Copying jar to server: $MS"
+  sshpass -pP@ssword123 scp -Cv -o StrictHostKeyChecking=no $ROOT/client/target/cloud-client-ui-*.jar root@$MS:/usr/share/cloudstack-management/lib/
+  echo "[acs server] Copying systemvm.iso"
+  sshpass -pP@ssword123 scp -Cv -o StrictHostKeyChecking=no $ROOT/systemvm/dist/systemvm.iso  root@$MS:/usr/share/cloudstack-common/vms/
+  echo "[acs server] Starting MS: $MS"
+  sshpass -pP@ssword123 ssh -o StrictHostKeyChecking=no root@$MS "systemctl start cloudstack-management"
+}
 
 agentscp() {
   ROOT=$PWD
