@@ -1,14 +1,14 @@
 set -exu
 
 # KVM and CloudStack agent dependencies
-yum install -y ntp java-1.8.0-openjdk-headless.x86_64 python-argparse python-netaddr net-tools bridge-utils ebtables ethtool iproute ipset iptables libvirt libvirt-python openssh-clients perl qemu-img qemu-kvm libuuid glibc nss-softokn-freebl
+yum install -y ntp java-11-openjdk python-argparse python-netaddr net-tools bridge-utils ebtables ethtool iproute ipset iptables libvirt libvirt-python openssh-clients perl qemu-img qemu-kvm libuuid glibc nss-softokn-freebl
 
 # Management server dependecies and services
 yum install -y mariadb-server nfs-utils mysql-connector-java genisoimage
 systemctl disable mariadb
 
 # Install cloudmonkey
-wget -O /bin/cmk https://github.com/apache/cloudstack-cloudmonkey/releases/download/6.0.0-testing-beta2/cmk.linux.amd64
+wget -O /bin/cmk https://github.com/apache/cloudstack-cloudmonkey/releases/download/6.0.0/cmk.linux.x86-64
 chmod +x /bin/cmk
 
 # Fix SELinux
@@ -85,7 +85,7 @@ mkdir -p /usr/lib64/python2.7/site-packages/
 mkdir -p /usr/share/cloudstack-common/scripts/
 mkdir -p /usr/share/cloudstack-common/vms/
 mkdir -p /usr/share/cloudstack-common/lib/
-wget -O /usr/share/cloudstack-common/lib/jasypt-1.9.2.jar http://central.maven.org/maven2/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar
+wget -O /usr/share/cloudstack-common/lib/jasypt-1.9.2.jar https://repo1.maven.org/maven2/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar
 
 cat > /etc/default/cloudstack-agent <<EOF
 JAVA=/usr/bin/java
@@ -145,3 +145,5 @@ cat > /etc/profile.d/cloudstack-agent-profile.sh <<EOF
 # need access to lsmod for adding host as non-root
 PATH=$PATH:/sbin
 EOF
+
+update-alternatives --set java /usr/lib/jvm/java-11-*/bin/java
