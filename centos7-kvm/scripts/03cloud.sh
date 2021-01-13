@@ -8,7 +8,7 @@ yum install -y mariadb-server nfs-utils mysql-connector-java genisoimage
 systemctl disable mariadb
 
 # Install cloudmonkey
-wget -O /bin/cmk https://github.com/apache/cloudstack-cloudmonkey/releases/download/6.0.0-testing-beta2/cmk.linux.amd64
+wget -O /bin/cmk https://github.com/apache/cloudstack-cloudmonkey/releases/download/6.1.0/cmk.linux.x86-64
 chmod +x /bin/cmk
 
 # Fix SELinux
