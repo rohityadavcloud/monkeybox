@@ -1,3 +1,5 @@
+This is deprecated now, see https://github.com/rhtyd/mbx
+
 # MonkeyBox by @rhtyd
 
 <img src="https://raw.githubusercontent.com/rhtyd/monkeybox/master/doc/images/box-start.png" style="width:400px;">
